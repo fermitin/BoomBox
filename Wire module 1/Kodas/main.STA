@@ -1,0 +1,53 @@
+
+ROM used:   2312/16384 (14%)
+            2312/16384 (14%) including unused fragments
+
+            1.9 Average locations per line
+            9.4 Average locations per statement
+
+RAM used:   143/512 (28%) at main() level
+            163/512 (32%) worst case
+
+Stack used: 3 worst case (2 in main + 1 for interrupts)
+Stack size: 31
+
+Lines Stmts  %   Files
+----- ----- ---  -----
+  309   245 100  main.c
+   31     0   0  main.h
+  873     0   0  D:\Program Files\PICC\Devices\18F14K22.h
+----- -----
+ 1213   245 Total
+
+Page ROM  %  RAM    Vol Diff  Functions:
+---- --- --- ---    --- ----  ----------
+0     24   1    1             @delay_ms1
+0     24   1    1             @I2C_WRITE_1
+0     90   2    0    357  3.3  i2c_interupt
+0    916  20  103    252  5.0  MAIN
+ Inline        11   4255  7.5  check_wires
+0     78   2    6    276  6.5  get_led_status
+0   1010  22    7   4674  8.0  check_wire_status
+ Inline         0             @cinit1
+
+Program metrics:
+    Functions               5
+    Statements              245
+    Comments                211
+    Volume (V)              11943
+    Difficulty (D)          30.3
+    Effort to implement (E) 361707
+    Time to implement (T)   5 hours, 35 minutes
+    Est Delivered Bugs (B)  2
+    Cyclomatic Complexity   50
+    Maintainability (MI)    35
+
+ Segment     Used  Free
+-----------  ----  ----
+00000-00002     4  0  
+00004-00006     0  4  
+00008-000AC   166  0  
+000AE-03FFE  2142  14068  
+
+
+

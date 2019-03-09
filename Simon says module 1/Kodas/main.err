@@ -1,0 +1,8 @@
+>>> Warning 202 "main.c" Line 3(6,10): Variable never used:   data
+>>> Warning 202 "main.c" Line 5(16,21): Variable never used:   state
+>>> Warning 202 "main.c" Line 7(6,8): Variable never used:   hp
+>>> Warning 202 "main.c" Line 8(6,9): Variable never used:   min
+>>> Warning 202 "main.c" Line 9(6,9): Variable never used:   sec
+      Memory usage:   ROM=5%      RAM=5% - 5%
+      0 Errors,  5 Warnings.
+Build Successful.

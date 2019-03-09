@@ -1,0 +1,127 @@
+000     @SCRATCH
+001     @SCRATCH
+001     _RETURN_
+002     @SCRATCH
+003     @SCRATCH
+004     @INTERRUPT_AREA
+005     @INTERRUPT_AREA
+006     @INTERRUPT_AREA
+007     @INTERRUPT_AREA
+008     @INTERRUPT_AREA
+009     @INTERRUPT_AREA
+00A     @INTERRUPT_AREA
+00B     @INTERRUPT_AREA
+00C     @INTERRUPT_AREA
+00D     @INTERRUPT_AREA
+00E     @INTERRUPT_AREA
+00F     @INTERRUPT_AREA
+010     @INTERRUPT_AREA
+011     @INTERRUPT_AREA
+012     @INTERRUPT_AREA
+013     @INTERRUPT_AREA
+014     @INTERRUPT_AREA
+015     @INTERRUPT_AREA
+016     @INTERRUPT_AREA
+017     @INTERRUPT_AREA
+018     @INTERRUPT_AREA
+019     data
+01A     incoming
+01B     state
+01C     hp
+01D     min
+01E     sec
+01F-026 series
+027     @I2C_STATE
+028-08A MAIN.this_checked
+08B     MAIN.i
+08C     MAIN.correct_wires_left
+08D-08E check_wires.this_checked
+08D     MAIN.@SCRATCH1
+08E     MAIN.@SCRATCH2
+08F-094 check_wires.wire_cut
+095     check_wires.@SCRATCH1
+096     check_wire_status.wire_to_cut
+096     check_wires.@SCRATCH2
+097-098 check_wire_status.wire_cut
+099     check_wire_status.correct_wire_cut
+09A     check_wire_status.i
+09B     check_wire_status.@SCRATCH1
+09C     @delay_ms1.P1
+09C     check_wire_status.@SCRATCH2
+09D     @I2C_WRITE_1.P1
+09D     get_led_status.incoming
+09E     get_led_status.c
+09F     get_led_status.k
+0A0     get_led_status.bin
+0A1     get_led_status.@SCRATCH1
+0A2     get_led_status.@SCRATCH2
+F6B.6   C2OUT
+F6D.6   C1OUT
+F74     CCP_4_LOW
+F74     CCP_4
+F75     CCP_4_HIGH
+FB8     CCP_3
+FB8     CCP_3_LOW
+FB9     CCP_3_HIGH
+FBB     CCP_2_LOW
+FBB     CCP_2
+FBC     CCP_2_HIGH
+FBE     CCP_1
+FBE     CCP_1_LOW
+FBF     CCP_1_HIGH
+FE1-FE2 @WRITE_PACKED_MEMORY.P1
+FE1-FE2 @READ_PACKED_MEMORY.P2
+FE9-FEA @WRITE_PACKED_MEMORY.P1
+FE9-FEA @READ_PACKED_MEMORY.P2
+FE9-FEA @WRITE_PROGRAM_MEMORY.P3
+FE9-FEA @READ_PROGRAM_MEMORY.P4
+FF6-FF8 @READ_PROGRAM_MEMORY.P1
+FF6-FF8 @WRITE_PROGRAM_MEMORY.P2
+
+ROM Allocation:
+0000AE  get_led_status
+0000FC  @I2C_WRITE_1
+000114  i2c_interupt
+00016E  @delay_ms1
+000186  check_wire_status
+000578  MAIN
+000578  @cinit1
+0005B6  @cinit2
+0005F2  check_wires
+
+Project Directory:
+    C:\Users\Barnie\Documents\Projects\Boom Box\Wire module 0.1\Kodas\
+
+Project Files:
+    main.c                                                  [05-Kov-19 21:04  CRC=95BB2119]
+    main.h                                                  [05-Kov-19 20:57  CRC=ED69AB31]
+    D:\Program Files\PICC\Devices\18F14K22.h                [21-Lie-17 13:43  CRC=4FAA7DA3]
+
+Source signature=2279C790
+Program memory checksum=0000
+Program memory CRC=0000
+Hex file CRC=93AB
+
+Units:
+    main (main)
+
+Compiler Settings:
+    Processor:      PIC18F14K22
+    Pointer Size:   16
+    ADC Range:      0-1023
+    Opt Level:      9
+    Short,Int,Long: UNSIGNED: 1,8,16
+    Float,Double:   32,32
+    Compile Mode:       CCS5
+
+Output Files:
+    XREF file:   main.xsym
+    Errors:      main.err
+    Ext Symbols: main.esym
+    INHX32:      main.hex
+    Symbols:     main.sym
+    List:        main.lst
+    Debug/COFF:  main.cof
+    Project:     main.ccspjt
+    Call Tree:   main.tre
+    Statistics:  main.STA

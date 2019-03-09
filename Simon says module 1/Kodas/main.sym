@@ -1,0 +1,150 @@
+000     @SCRATCH
+001     @SCRATCH
+001     _RETURN_
+002     @SCRATCH
+003     @SCRATCH
+004     @INTERRUPT_AREA
+005     @INTERRUPT_AREA
+006     @INTERRUPT_AREA
+007     @INTERRUPT_AREA
+008     @INTERRUPT_AREA
+009     @INTERRUPT_AREA
+00A     @INTERRUPT_AREA
+00B     @INTERRUPT_AREA
+00C     @INTERRUPT_AREA
+00D     @INTERRUPT_AREA
+00E     @INTERRUPT_AREA
+00F     @INTERRUPT_AREA
+010     @INTERRUPT_AREA
+011     @INTERRUPT_AREA
+012     @INTERRUPT_AREA
+013     @INTERRUPT_AREA
+014     @INTERRUPT_AREA
+015     @INTERRUPT_AREA
+016     @INTERRUPT_AREA
+017     @INTERRUPT_AREA
+018     @INTERRUPT_AREA
+019-01A strtok.save
+01B-01E _Randseed
+01F     data
+020     incoming
+021     state
+022     hp
+023     min
+024     sec
+025-02C seriess
+02D-05E MAIN.series
+05F     MAIN.i
+060-061 game.series
+060     MAIN.@SCRATCH1
+060     display_wrong.@SCRATCH1
+061     MAIN.@SCRATCH2
+062-065 @MUL3232.P1
+062     game.fail_state
+062     rand.@SCRATCH1
+062     MAIN.@SCRATCH3
+063     game.turn
+063     rand.@SCRATCH2
+063     MAIN.@SCRATCH4
+064     display_wrong2.i
+064-065 check_button_press.series
+064-065 blink_this_turn.series
+064     rand.@SCRATCH3
+065-066 @DIV1616.P1
+065     rand.@SCRATCH4
+066     check_button_press.turn
+066     blink_this_turn.turn
+066-069 @MUL3232.P1
+067-068 @DIV1616.P1
+067     blink_this_turn.i
+067     check_button_press.i
+068     check_button_press.@SCRATCH1
+068     blink_this_turn.@SCRATCH1
+069     @delay_ms1.P1
+069     @DIV1616.@SCRATCH1
+069     check_button_press.@SCRATCH2
+06A     @MUL3232.@SCRATCH1
+06A     check_button_press.@SCRATCH3
+06B     @MUL3232.@SCRATCH2
+06B     check_button_press.@SCRATCH4
+06C     @MUL3232.@SCRATCH3
+06D     @MUL3232.@SCRATCH4
+06E     @MUL3232.@SCRATCH5
+06F     @MUL3232.@SCRATCH6
+FB4.6   C1OUT
+FB4.7   C2OUT
+FBB     CCP_2
+FBB     CCP_2_LOW
+FBC     CCP_2_HIGH
+FBE     CCP_1_LOW
+FBE     CCP_1
+FBF     CCP_1_HIGH
+FE1-FE2 @WRITE_PACKED_MEMORY.P1
+FE1-FE2 @READ_PACKED_MEMORY.P2
+FE9-FEA @WRITE_PACKED_MEMORY.P1
+FE9-FEA @READ_PACKED_MEMORY.P2
+FE9-FEA @WRITE_PROGRAM_MEMORY.P3
+FE9-FEA @READ_PROGRAM_MEMORY.P4
+FF6-FF8 @READ_PROGRAM_MEMORY.P1
+FF6-FF8 @WRITE_PROGRAM_MEMORY.P2
+
+ROM Allocation:
+0000AE  i2c_interupt
+0000B4  init
+0000DE  @MUL3232
+000134  @DIV1616
+000178  rand
+0001E2  enable_trans
+0001F4  @delay_ms1
+00020C  blink_this_turn
+0002F8  disable_trans
+00030C  display_wrong2
+000348  game
+000370  check_button_press
+00042E  display_wrong
+000460  MAIN
+000460  @cinit1
+000490  @cinit2
+0136  StrtoulGO
+0136  StrtolGO
+
+Project Directory:
+    C:\Users\Barnie\Documents\Projects\Boom Box\Simon says module\Kodas\
+
+Project Files:
+    main.c                                                  [26-Sau-19 22:44  CRC=9D7A89ED]
+    main.h                                                  [24-Sau-19 19:03  CRC=DD0FB9F0]
+    D:\Program Files\PICC\Devices\18F2455.h                 [21-Lie-17 13:44  CRC=A54820CA]
+    D:\Program Files\PICC\Drivers\STDLIB.H                  [29-Bir-16 10:34  CRC=7E9CC16B]
+    D:\Program Files\PICC\Drivers\stddef.h                  [05-Rgs-14 12:47  CRC=897CEC6C]
+    D:\Program Files\PICC\Drivers\string.h                  [26-Kov-15 13:34  CRC=C4814297]
+    D:\Program Files\PICC\Drivers\ctype.h                   [03-Sau-08 15:55  CRC=2D1F019F]
+
+Source signature=46AB5853
+Program memory checksum=0000
+Program memory CRC=0000
+Hex file CRC=B553
+
+Units:
+    main (main)
+
+Compiler Settings:
+    Processor:      PIC18F2455
+    Pointer Size:   16
+    ADC Range:      0-1023
+    Opt Level:      9
+    Short,Int,Long: UNSIGNED: 1,8,16
+    Float,Double:   32,32
+    Compile Mode:       CCS5
+
+Output Files:
+    XREF file:   main.xsym
+    Errors:      main.err
+    Ext Symbols: main.esym
+    INHX32:      main.hex
+    Symbols:     main.sym
+    List:        main.lst
+    Debug/COFF:  main.cof
+    Project:     main.ccspjt
+    Call Tree:   main.tre
+    Statistics:  main.STA

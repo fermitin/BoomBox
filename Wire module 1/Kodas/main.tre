@@ -1,0 +1,54 @@
+ÀÄWire module 0
+   ÃÄMAIN  0/916  Ram=103
+   ³  ÃÄ@cinit1  (Inline)  Ram=0
+   ³  ÀÄcheck_wires  (Inline)  Ram=11
+   ³     ÃÄcheck_wire_status  0/1010  Ram=7
+   ³     ³  ÃÄ@delay_ms1  0/24  Ram=1
+   ³     ³  ÃÄ@delay_ms1  0/24  Ram=1
+   ³     ³  ÃÄ@delay_ms1  0/24  Ram=1
+   ³     ³  ÃÄ@delay_ms1  0/24  Ram=1
+   ³     ³  ÃÄ@delay_ms1  0/24  Ram=1
+   ³     ³  ÃÄ@delay_ms1  0/24  Ram=1
+   ³     ³  ÃÄ@delay_ms1  0/24  Ram=1
+   ³     ³  ÃÄ@delay_ms1  0/24  Ram=1
+   ³     ³  ÃÄ@delay_ms1  0/24  Ram=1
+   ³     ³  ÃÄ@delay_ms1  0/24  Ram=1
+   ³     ³  ÃÄ@delay_ms1  0/24  Ram=1
+   ³     ³  ÃÄ@delay_ms1  0/24  Ram=1
+   ³     ³  ÃÄ@delay_ms1  0/24  Ram=1
+   ³     ³  ÃÄ@delay_ms1  0/24  Ram=1
+   ³     ³  ÃÄ@delay_ms1  0/24  Ram=1
+   ³     ³  ÃÄ@delay_ms1  0/24  Ram=1
+   ³     ³  ÃÄ@delay_ms1  0/24  Ram=1
+   ³     ³  ÃÄ@delay_ms1  0/24  Ram=1
+   ³     ³  ÃÄ@delay_ms1  0/24  Ram=1
+   ³     ³  ÃÄ@delay_ms1  0/24  Ram=1
+   ³     ³  ÃÄ@delay_ms1  0/24  Ram=1
+   ³     ³  ÃÄ@delay_ms1  0/24  Ram=1
+   ³     ³  ÃÄ@delay_ms1  0/24  Ram=1
+   ³     ³  ÀÄ@delay_ms1  0/24  Ram=1
+   ³     ÃÄcheck_wire_status  0/1010  Ram=7
+   ³     ³  ÀÄ*
+   ³     ÃÄcheck_wire_status  0/1010  Ram=7
+   ³     ³  ÀÄ*
+   ³     ÃÄcheck_wire_status  0/1010  Ram=7
+   ³     ³  ÀÄ*
+   ³     ÃÄcheck_wire_status  0/1010  Ram=7
+   ³     ³  ÀÄ*
+   ³     ÃÄcheck_wire_status  0/1010  Ram=7
+   ³     ³  ÀÄ*
+   ³     ÃÄcheck_wire_status  0/1010  Ram=7
+   ³     ³  ÀÄ*
+   ³     ÃÄcheck_wire_status  0/1010  Ram=7
+   ³     ³  ÀÄ*
+   ³     ÃÄcheck_wire_status  0/1010  Ram=7
+   ³     ³  ÀÄ*
+   ³     ÃÄcheck_wire_status  0/1010  Ram=7
+   ³     ³  ÀÄ*
+   ³     ÃÄcheck_wire_status  0/1010  Ram=7
+   ³     ³  ÀÄ*
+   ³     ÀÄcheck_wire_status  0/1010  Ram=7
+   ³        ÀÄ*
+   ÀÄi2c_interupt  0/90  Ram=0
+      ÃÄget_led_status  0/78  Ram=6
+      ÀÄ@I2C_WRITE_1  0/24  Ram=1

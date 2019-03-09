@@ -1,0 +1,75 @@
+[PROJECT]
+Target=main.hex
+Processor_Text=PIC18F2455
+CCSVerions=5.074
+Compiler=PCH
+CCSVersion=5.074
+[Target Data]
+FileList=main.c
+[Directories]
+Include=
+[C:\Users\Barnie\Documents\Projects\Boom Box\Simon says module\Kodas\main]
+Type=4
+[mru-list]
+1=main.c
+
+[fileformats]
+forcecoff=0
+
+[ProjectLog]
+Days=4
+D1=24-01-2019
+D1_L=10
+D1_L1=[68521]Project Opened.
+D1_L2=[68523]Project Closed.
+D1_L3=[68535]Project Opened.
+D1_L4=[68536]Started Editing.
+D1_L5=[68577]Stopped Editing.
+TotalEdit=16
+TotalDebug=0
+D1_E=6
+D1_D=0
+D1_L6=[68577]Project Closed.
+D1_L7=[68587]Project Opened.
+D1_L8=[68590]Started Editing.
+D1_L9=[69173]Stopped Editing.
+D1_L10=[75735]Project Closed.
+D2=26-01-2019
+D2_L=11
+D2_L1=[77661]Project Opened.
+D2_L2=[77669]Project Closed.
+D2_L3=[77669]Project Opened.
+D2_L4=[77681]Started Editing.
+D2_L5=[78024]Stopped Editing.
+D2_E=6
+D2_D=0
+D2_L6=[78024]Project Closed.
+D2_L7=[81247]Project Opened.
+D2_L8=[81254]Started Editing.
+D2_L9=[81703]Stopped Editing.
+D2_L10=[81823]Started Editing.
+D2_L11=[82192]Stopped Editing.
+D3=27-01-2019
+D3_E=4
+D3_D=0
+D3_L=1
+D3_L1=[72988]Project Closed.
+D4=01-02-2019
+D4_L=2
+D4_L1=[61433]Project Opened.
+D4_L2=[61950]Project Closed.
+
+[Opened Files]
+1=main.c
+t1=1
+Count=2
+2=main.h
+t2=1
+[main.c]
+Type=4
+
+[defines]
+buildcount=8
+[Units]
+Count=1
+1=main (main)

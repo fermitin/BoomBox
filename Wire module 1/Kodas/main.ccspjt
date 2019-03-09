@@ -1,0 +1,139 @@
+[PROJECT]
+Target=main.hex
+Processor_Text=PIC18F14K22
+CCSVerions=5.074
+Compiler=PCH
+CCSVersion=5.074
+[Target Data]
+FileList=main.c
+[Directories]
+Include=
+[C:\Users\Barnie\Documents\Projects\Boom Box\Wire module 0.1\Kodas\main]
+Type=4
+[mru-list]
+1=main.c
+
+[fileformats]
+forcecoff=0
+
+[ProjectLog]
+Days=8
+D1=20-01-2019
+D1_L=30
+D1_L1=[73852]Project Opened.
+D1_L2=[73871]Project Closed.
+D1_L3=[73887]Project Opened.
+D1_L4=[73889]Started Editing.
+D1_L5=[73896]Stopped Editing.
+TotalEdit=66
+TotalDebug=0
+D1_E=23
+D1_D=0
+D1_L6=[73896]Project Closed.
+D1_L7=[73905]Project Opened.
+D1_L8=[73907]Started Editing.
+D1_L9=[73923]Stopped Editing.
+D1_L10=[73923]Project Closed.
+D1_L11=[73938]Project Opened.
+D1_L12=[73979]Started Editing.
+D1_L13=[74280]Stopped Editing.
+D1_L14=[74496]Started Editing.
+D1_L15=[74632]Stopped Editing.
+D1_L16=[74632]Project Closed.
+D1_L17=[74731]Project Opened.
+D1_L18=[74814]Started Editing.
+D1_L19=[75013]Stopped Editing.
+D1_L20=[75013]Project Closed.
+D1_L21=[75082]Project Opened.
+D1_L22=[78717]Project Closed.
+D1_L23=[78972]Project Opened.
+D1_L24=[78983]Started Editing.
+D1_L25=[79677]Stopped Editing.
+D1_L26=[79677]Project Closed.
+D1_L27=[79767]Project Opened.
+D1_L28=[79773]Started Editing.
+D1_L29=[79845]Stopped Editing.
+D1_L30=[79845]Project Closed.
+D2=21-01-2019
+D2_L=11
+D2_L1=[74474]Project Opened.
+D2_L2=[74487]Started Editing.
+D2_L3=[74625]Stopped Editing.
+D2_E=5
+D2_D=0
+D2_L4=[74625]Project Closed.
+D2_L5=[74693]Project Opened.
+D2_L6=[74697]Started Editing.
+D2_L7=[74761]Stopped Editing.
+D2_L8=[74761]Project Closed.
+D2_L9=[81177]Project Opened.
+D2_L10=[81189]Started Editing.
+D2_L11=[81794]Stopped Editing.
+D3=22-01-2019
+D3_E=6
+D3_D=0
+D3_L=1
+D3_L1=[77264]Project Closed.
+D4=24-01-2019
+D4_L=2
+D4_L1=[68393]Project Opened.
+D4_L2=[68521]Project Closed.
+D5=04-03-2019
+D5_L=14
+D5_L1=[76966]Project Opened.
+D5_L2=[77089]Started Editing.
+D5_L3=[77284]Stopped Editing.
+D5_E=14
+D5_D=0
+D5_L4=[77285]Project Closed.
+D5_L5=[77321]Project Opened.
+D5_L6=[77327]Started Editing.
+D5_L7=[77331]Stopped Editing.
+D5_L8=[77331]Project Closed.
+D5_L9=[77349]Project Opened.
+D5_L10=[77353]Started Editing.
+D5_L11=[78113]Stopped Editing.
+D5_L12=[78393]Started Editing.
+D5_L13=[78738]Stopped Editing.
+D5_L14=[79147]Project Closed.
+D6=05-03-2019
+D6_L=7
+D6_L1=[74871]Project Opened.
+D6_L2=[74899]Started Editing.
+D6_L3=[75739]Stopped Editing.
+D6_E=15
+D6_D=0
+D6_L4=[75740]Project Closed.
+D6_L5=[75751]Project Opened.
+D6_L6=[75756]Started Editing.
+D6_L7=[76056]Stopped Editing.
+D7=07-03-2019
+D7_E=3
+D7_D=0
+D7_L=8
+D7_L1=[76923]Project Closed.
+D7_L2=[77026]Project Opened.
+D7_L3=[77139]Project Closed.
+D7_L4=[78256]Project Opened.
+D7_L5=[78309]Started Editing.
+D7_L6=[78682]Stopped Editing.
+D7_L7=[79095]Project Closed.
+D7_L8=[80174]Project Opened.
+D8=09-03-2019
+D8_L=1
+D8_L1=[39977]Project Closed.
+
+[Opened Files]
+1=main.c
+t1=1
+2=main.h
+t2=8
+Count=2
+[main.c]
+Type=4
+
+[defines]
+buildcount=44
+[Units]
+Count=1
+1=main (main)

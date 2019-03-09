@@ -1,0 +1,169 @@
+000     @SCRATCH
+001     @SCRATCH
+001     _RETURN_
+002     @SCRATCH
+003     @SCRATCH
+004-005 strtok.save
+006-009 _Randseed
+00A-011 disp0
+012-019 disp1
+01A-021 disp2
+022-029 disp3
+02A-031 disp4
+032-039 disp5
+03A-041 disp6
+042-049 disp7
+04A-051 disp8
+052-059 disp9
+05A     MAIN.health
+05B     MAIN.min
+05C     MAIN.sec
+05D     MAIN.modules_left
+05E-065 MAIN.series
+066-067 led_series_set.series
+066-067 send_gen_values.series
+066     beep_sound.min
+066     check_fail_state.health
+066     display_loop.min1
+066     reset.i
+066     recieve_hp_data.incoming
+066     MAIN.@SCRATCH1
+066     seed_generation.@SCRATCH1
+067     display_loop.min2
+067     beep_sound.sec
+067     seed_generation.@SCRATCH2
+068     display_loop.sec1
+068     led_series_set.i
+068     send_gen_values.health
+068-06B srand.seed
+068     beep_sound.@SCRATCH1
+069     display_loop.sec2
+069     send_gen_values.min
+069     @I2C_READU_1.P1
+069     @delay_ms1.P2
+069     led_series_set.@SCRATCH1
+06A     display_loop.i
+06A     send_gen_values.sec
+06A     led_series_set.@SCRATCH2
+06B     send_gen_values.bin
+06B-06E @MUL3232.P1
+06B     rand.@SCRATCH1
+06B     led_series_set.@SCRATCH3
+06C     send_gen_values.i
+06C     rand.@SCRATCH2
+06C     led_series_set.@SCRATCH4
+06D     @I2C_WRITEU_1.P1
+06D     rand.@SCRATCH3
+06E     seperateNumbers.min
+06E     display.digit
+06E-06F @DIV1616.P1
+06E     rand.@SCRATCH4
+06F-072 @MUL3232.P1
+06F     display.data_pin
+06F     seperateNumbers.sec
+070-071 @DIV1616.P1
+070     display.segment
+071     display.state
+072     @DIV1616.@SCRATCH1
+073     @MUL3232.@SCRATCH1
+074     @DIV88.P1
+074     @MUL3232.@SCRATCH2
+075     @DIV88.P1
+075     @MUL3232.@SCRATCH3
+076     @MUL3232.@SCRATCH4
+076     @DIV88.@SCRATCH1
+077     @MUL3232.@SCRATCH5
+078     @MUL3232.@SCRATCH6
+F55     CCP_5
+F55     CCP_5_LOW
+F56     CCP_5_HIGH
+F58     CCP_4_LOW
+F58     CCP_4
+F59     CCP_4_HIGH
+F5E     CCP_3_LOW
+F5E     CCP_3
+F5F     CCP_3_HIGH
+F67     CCP_2
+F67     CCP_2_LOW
+F68     CCP_2_HIGH
+F78.6   C2OUT
+F79.6   C1OUT
+FBE     CCP_1_LOW
+FBE     CCP_1
+FBF     CCP_1_HIGH
+FE1-FE2 @WRITE_PACKED_MEMORY.P1
+FE1-FE2 @READ_PACKED_MEMORY.P2
+FE9-FEA @WRITE_PROGRAM_MEMORY.P1
+FE9-FEA @READ_PROGRAM_MEMORY.P2
+FE9-FEA @READ_PACKED_MEMORY.P3
+FE9-FEA @WRITE_PACKED_MEMORY.P4
+FF6-FF8 @WRITE_PROGRAM_MEMORY.P1
+FF6-FF8 @READ_PROGRAM_MEMORY.P2
+
+ROM Allocation:
+000004  srand
+000018  seed_generation
+000100  reset
+000134  init
+000154  @MUL3232
+0001AA  @DIV1616
+0001EE  rand
+000258  led_series_set
+00030E  @delay_ms1
+000326  @I2C_WRITEU_1
+000342  send_gen_values
+0003B4  @DIV88
+0003DC  display
+00052C  beep_sound
+000632  @I2C_READU_1
+000650  @cinit1
+000650  MAIN
+000680  @cinit2
+000752  display_loop
+000762  seperateNumbers
+000824  check_fail_state
+00086A  recieve_hp_data
+000888  @ADDFF
+0136  StrtoulGO
+0136  StrtolGO
+
+Project Directory:
+    C:\Users\Barnie\Documents\Projects\Boom Box\Main module 0.3\Code\
+
+Project Files:
+    main.c                                                  [07-Kov-19 22:12  CRC=C9D57C97]
+    main.h                                                  [20-Sau-19 22:08  CRC=CF5EEEEF]
+    D:\Program Files\PICC\Devices\18F24K22.h                [21-Lie-17 13:43  CRC=F7F2E617]
+    D:\Program Files\PICC\Drivers\STDLIB.H                  [29-Bir-16 10:34  CRC=7E9CC16B]
+    D:\Program Files\PICC\Drivers\stddef.h                  [05-Rgs-14 12:47  CRC=897CEC6C]
+    D:\Program Files\PICC\Drivers\string.h                  [26-Kov-15 13:34  CRC=C4814297]
+    D:\Program Files\PICC\Drivers\ctype.h                   [03-Sau-08 15:55  CRC=2D1F019F]
+
+Source signature=B8004549
+Program memory checksum=0000
+Program memory CRC=0000
+Hex file CRC=46A7
+
+Units:
+    main (main)
+
+Compiler Settings:
+    Processor:      PIC18F24K22
+    Pointer Size:   16
+    ADC Range:      0-1023
+    Opt Level:      9
+    Short,Int,Long: UNSIGNED: 1,8,16
+    Float,Double:   32,32
+    Compile Mode:       CCS5
+
+Output Files:
+    XREF file:   main.xsym
+    Errors:      main.err
+    Ext Symbols: main.esym
+    INHX32:      main.hex
+    Symbols:     main.sym
+    List:        main.lst
+    Debug/COFF:  main.cof
+    Project:     main.ccspjt
+    Call Tree:   main.tre
+    Statistics:  main.STA

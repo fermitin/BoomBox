@@ -1,0 +1,302 @@
+CCS PCH C Compiler, Version 5.074, 43599               21-Sau-19 20:39
+
+               Filename:   C:\Users\Barnie\Documents\Projects\Boom Box\Main module 0.1\Kodas\main.lst
+
+               ROM used:   472 bytes (3%)
+                           Largest free fragment is 15908
+               RAM used:   40 (8%) at main() level
+                           46 (9%) worst case
+               Stack used: 2 locations (0 in main + 2 for interrupts)
+               Stack size: 31
+
+*
+0000:  GOTO   016E
+*
+0008:  MOVWF  04
+000A:  MOVFF  FD8,05
+000E:  MOVFF  FE0,06
+0012:  MOVLB  0
+0014:  MOVFF  FE9,0C
+0018:  MOVFF  FEA,07
+001C:  MOVFF  FE1,08
+0020:  MOVFF  FE2,09
+0024:  MOVFF  FD9,0A
+0028:  MOVFF  FDA,0B
+002C:  MOVFF  FF3,12
+0030:  MOVFF  FF4,13
+0034:  MOVFF  FFA,14
+0038:  MOVFF  FF5,15
+003C:  MOVFF  FF6,16
+0040:  MOVFF  FF7,17
+0044:  MOVFF  00,0E
+0048:  MOVFF  01,0F
+004C:  MOVFF  02,10
+0050:  MOVFF  03,11
+0054:  BTFSS  F9D.3
+0056:  GOTO   0060
+005A:  BTFSC  F9E.3
+005C:  GOTO   0114
+0060:  MOVFF  0E,00
+0064:  MOVFF  0F,01
+0068:  MOVFF  10,02
+006C:  MOVFF  11,03
+0070:  MOVFF  0C,FE9
+0074:  MOVFF  07,FEA
+0078:  BSF    07.7
+007A:  MOVFF  08,FE1
+007E:  MOVFF  09,FE2
+0082:  MOVFF  0A,FD9
+0086:  MOVFF  0B,FDA
+008A:  MOVFF  12,FF3
+008E:  MOVFF  13,FF4
+0092:  MOVFF  14,FFA
+0096:  MOVFF  15,FF5
+009A:  MOVFF  16,FF6
+009E:  MOVFF  17,FF7
+00A2:  MOVF   04,W
+00A4:  MOVFF  06,FE0
+00A8:  MOVFF  05,FD8
+00AC:  RETFIE 0
+.................... #include <main.h> 
+.................... #include <18F14K22.h> 
+.................... //////////// Standard Header file for the PIC18F14K22 device //////////////// 
+.................... /////////////////////////////////////////////////////////////////////////// 
+.................... ////        (C) Copyright 1996, 2014 Custom Computer Services          //// 
+.................... //// This source code may only be used by licensed users of the CCS C  //// 
+.................... //// compiler.  This source code may only be distributed to other      //// 
+.................... //// licensed users of the CCS C compiler.  No other use, reproduction //// 
+.................... //// or distribution is permitted without written permission.          //// 
+.................... //// Derivative programs created using this software in object code    //// 
+.................... //// form are not restricted in any way.                               //// 
+.................... /////////////////////////////////////////////////////////////////////////// 
+.................... #device PIC18F14K22 
+....................  
+.................... #list 
+....................  
+.................... #device ADC=10 
+....................  
+.................... #FUSES NOWDT                    //No Watch Dog Timer 
+....................  
+.................... #use delay(internal=1000000)  
+.................... #use i2c(SLAVE, SDA=PIN_B4, SCL=PIN_B6, address=0x14) 
+*
+00FC:  MOVF   FC9,W
+00FE:  MOVFF  28,FC9
+0102:  BSF    FC6.4
+0104:  BCF    F9E.3
+0106:  BTFSC  FC7.0
+0108:  BRA    0106
+010A:  CLRF   01
+010C:  BTFSS  FC5.6
+010E:  INCF   01,F
+0110:  GOTO   0168 (RETURN)
+....................  
+.................... #define green_led PIN_A4 
+....................  
+.................... void get_led_status(int8 incoming); 
+....................  
+....................  
+.................... int8 data = 0;                                           //data is information to be sent 
+....................  
+.................... int8 incoming, state;                                    //incoming is the data from the i2c channel state is direction of data coming or going 
+....................  
+.................... int8 hp = -1;                                            //The main modules generated HP 
+.................... int8 min = -1;                                           //The main modules generated minutes 
+.................... int8 sec = -1;                                           //The main modules generated seconds 
+.................... int8 series[8] = {-1, -1, -1, -1, -1, -1, -1, -1};       //The main modules generated led sequence 
+....................                                                          //We use 8 bits, because I2C channel is 8 bits, even though we only need 4 bits 
+....................  
+.................... #INT_SSP  
+.................... void i2c_interupt (void){  
+....................    state = i2c_isr_state();  
+0114:  BTFSC  FC7.5
+0116:  BRA    011E
+0118:  CLRF   27
+011A:  BTFSC  FC7.2
+011C:  BSF    27.7
+011E:  MOVF   27,W
+0120:  INCF   27,F
+0122:  MOVWF  1B
+....................      
+....................    if(state < 0x80){                                     //Master is sending data  
+0124:  MOVF   1B,W
+0126:  SUBLW  7F
+0128:  BNC   015E
+....................       incoming = i2c_read(); 
+012A:  BCF    FC6.6
+012C:  BTFSS  FC7.0
+012E:  BRA    012C
+0130:  MOVF   FC9,W
+0132:  BSF    FC6.4
+0134:  MOVWF  1A
+....................       if(state == 1){                      
+0136:  DECFSZ 1B,W
+0138:  BRA    013E
+....................          hp = incoming; 
+013A:  MOVFF  1A,1C
+....................       }  
+....................       if(state == 2){                      
+013E:  MOVF   1B,W
+0140:  SUBLW  02
+0142:  BNZ   0148
+....................          min = incoming; 
+0144:  MOVFF  1A,1D
+....................       } 
+....................       if(state == 3){ 
+0148:  MOVF   1B,W
+014A:  SUBLW  03
+014C:  BNZ   0152
+....................          sec = incoming; 
+014E:  MOVFF  1A,1E
+....................       } 
+....................       if(state == 4){ 
+0152:  MOVF   1B,W
+0154:  SUBLW  04
+0156:  BNZ   015E
+....................          get_led_status(incoming); 
+0158:  MOVFF  1A,28
+015C:  BRA    00AE
+....................       } 
+....................    } 
+....................     
+....................    if (state == 0x80){                                   //Not a recieve nor send byte  
+015E:  MOVF   1B,W
+0160:  SUBLW  80
+0162:  BNZ   0168
+....................       i2c_write(0);                                      //Dummy send so I2C doesnt lock up 
+0164:  CLRF   28
+0166:  BRA    00FC
+....................    }  
+....................    
+0168:  BCF    F9E.3
+016A:  GOTO   0060
+.................... } 
+....................  
+.................... void main() { 
+016E:  CLRF   FF8
+0170:  BCF    FD0.7
+0172:  BSF    07.7
+0174:  MOVLW  30
+0176:  MOVWF  FD3
+0178:  BCF    F9B.6
+017A:  BCF    F9B.7
+017C:  BSF    F93.6
+017E:  BSF    F93.4
+0180:  MOVLW  14
+0182:  MOVWF  FC8
+0184:  MOVLW  36
+0186:  MOVWF  FC6
+0188:  BSF    FC5.0
+018A:  BSF    FC5.7
+018C:  CLRF   19
+018E:  SETF   1C
+0190:  SETF   1D
+0192:  SETF   1E
+0194:  MOVLW  03
+0196:  MOVWF  27
+0198:  MOVLW  00
+019A:  MOVWF  F7E
+019C:  BCF    FC1.0
+019E:  BCF    FC1.1
+01A0:  BCF    FC1.2
+01A2:  BCF    FC1.3
+01A4:  MOVWF  F7F
+01A6:  CLRF   F6C
+01A8:  CLRF   F6B
+01AA:  CLRF   F6D
+01AC:  SETF   1F
+01AE:  SETF   20
+01B0:  SETF   21
+01B2:  SETF   22
+01B4:  SETF   23
+01B6:  SETF   24
+01B8:  SETF   25
+01BA:  SETF   26
+....................    //I2C init interrupts 
+....................    enable_interrupts(INT_SSP);  
+01BC:  BSF    F9D.3
+....................    enable_interrupts(GLOBAL);  
+01BE:  MOVLW  C0
+01C0:  IORWF  FF2,F
+....................     
+....................    while(TRUE){ 
+....................       if(sec == 30 || sec == 59){ 
+01C2:  MOVF   1E,W
+01C4:  SUBLW  1E
+01C6:  BZ    01CE
+01C8:  MOVF   1E,W
+01CA:  SUBLW  3B
+01CC:  BNZ   01D4
+....................          output_high(green_led); 
+01CE:  BCF    F92.4
+01D0:  BSF    F89.4
+....................       }else{ 
+01D2:  BRA    01D8
+....................          output_low(green_led); 
+01D4:  BCF    F92.4
+01D6:  BCF    F89.4
+....................       } 
+01D8:  BRA    01C2
+....................    } 
+....................  
+.................... } 
+....................  
+01DA:  SLEEP 
+.................... void get_led_status(int8 incoming){ 
+*
+00AE:  MOVFF  28,2B
+....................    int c, k; 
+....................    int bin = incoming; 
+....................    for (c = 0; c < 8; ++c){ 
+00B2:  CLRF   29
+00B4:  MOVF   29,W
+00B6:  SUBLW  07
+00B8:  BNC   00F8
+....................       k = bin >> c; 
+00BA:  MOVFF  2B,2A
+00BE:  MOVF   29,W
+00C0:  MOVWF  01
+00C2:  BZ    00CC
+00C4:  BCF    FD8.0
+00C6:  RRCF   2A,F
+00C8:  DECFSZ 01,F
+00CA:  BRA    00C4
+....................       if (k & 1){ 
+00CC:  BTFSS  2A.0
+00CE:  BRA    00E4
+....................          series[c] = 1; 
+00D0:  CLRF   03
+00D2:  MOVF   29,W
+00D4:  ADDLW  1F
+00D6:  MOVWF  FE9
+00D8:  MOVLW  00
+00DA:  ADDWFC 03,W
+00DC:  MOVWF  FEA
+00DE:  MOVLW  01
+00E0:  MOVWF  FEF
+....................       }else{ 
+00E2:  BRA    00F4
+....................          series[c] = 0; 
+00E4:  CLRF   03
+00E6:  MOVF   29,W
+00E8:  ADDLW  1F
+00EA:  MOVWF  FE9
+00EC:  MOVLW  00
+00EE:  ADDWFC 03,W
+00F0:  MOVWF  FEA
+00F2:  CLRF   FEF
+....................       } 
+00F4:  INCF   29,F
+00F6:  BRA    00B4
+....................    }  
+00F8:  GOTO   015E (RETURN)
+.................... } 
+
+Configuration Fuses:
+   Word  1: E800   INTRC_IO NOPLLEN PCLKEN FCMEN IESO
+   Word  2: 1E1E   PUT BROWNOUT BORV19 NOWDT WDT32768
+   Word  3: 8800   HFOFST MCLR
+   Word  4: 0089   STVREN NOLVP BBSIZ2K NOXINST NODEBUG
+   Word  5: C003   NOPROTECT NOCPB NOCPD
+   Word  6: E003   NOWRT NOWRTC NOWRTB NOWRTD
+   Word  7: 4003   NOEBTR NOEBTRB

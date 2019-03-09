@@ -1,0 +1,1477 @@
+CCS PCH C Compiler, Version 5.074, 43599               05-Kov-19 21:04
+
+               Filename:   C:\Users\Barnie\Documents\Projects\Boom Box\Wire module 0.1\Kodas\main.lst
+
+               ROM used:   2312 bytes (14%)
+                           Largest free fragment is 14068
+               RAM used:   143 (28%) at main() level
+                           163 (32%) worst case
+               Stack used: 3 locations (2 in main + 1 for interrupts)
+               Stack size: 31
+
+*
+0000:  GOTO   0578
+*
+0008:  MOVWF  04
+000A:  MOVFF  FD8,05
+000E:  MOVFF  FE0,06
+0012:  MOVLB  0
+0014:  MOVFF  FE9,0C
+0018:  MOVFF  FEA,07
+001C:  MOVFF  FE1,08
+0020:  MOVFF  FE2,09
+0024:  MOVFF  FD9,0A
+0028:  MOVFF  FDA,0B
+002C:  MOVFF  FF3,12
+0030:  MOVFF  FF4,13
+0034:  MOVFF  FFA,14
+0038:  MOVFF  FF5,15
+003C:  MOVFF  FF6,16
+0040:  MOVFF  FF7,17
+0044:  MOVFF  00,0E
+0048:  MOVFF  01,0F
+004C:  MOVFF  02,10
+0050:  MOVFF  03,11
+0054:  BTFSS  F9D.3
+0056:  GOTO   0060
+005A:  BTFSC  F9E.3
+005C:  GOTO   0114
+0060:  MOVFF  0E,00
+0064:  MOVFF  0F,01
+0068:  MOVFF  10,02
+006C:  MOVFF  11,03
+0070:  MOVFF  0C,FE9
+0074:  MOVFF  07,FEA
+0078:  BSF    07.7
+007A:  MOVFF  08,FE1
+007E:  MOVFF  09,FE2
+0082:  MOVFF  0A,FD9
+0086:  MOVFF  0B,FDA
+008A:  MOVFF  12,FF3
+008E:  MOVFF  13,FF4
+0092:  MOVFF  14,FFA
+0096:  MOVFF  15,FF5
+009A:  MOVFF  16,FF6
+009E:  MOVFF  17,FF7
+00A2:  MOVF   04,W
+00A4:  MOVFF  06,FE0
+00A8:  MOVFF  05,FD8
+00AC:  RETFIE 0
+.................... //I2C SLAVE 
+.................... //Laidu modulis 
+.................... #include <main.h> 
+.................... #include <18F14K22.h> 
+.................... //////////// Standard Header file for the PIC18F14K22 device //////////////// 
+.................... /////////////////////////////////////////////////////////////////////////// 
+.................... ////        (C) Copyright 1996, 2014 Custom Computer Services          //// 
+.................... //// This source code may only be used by licensed users of the CCS C  //// 
+.................... //// compiler.  This source code may only be distributed to other      //// 
+.................... //// licensed users of the CCS C compiler.  No other use, reproduction //// 
+.................... //// or distribution is permitted without written permission.          //// 
+.................... //// Derivative programs created using this software in object code    //// 
+.................... //// form are not restricted in any way.                               //// 
+.................... /////////////////////////////////////////////////////////////////////////// 
+.................... #device PIC18F14K22 
+....................  
+.................... #list 
+....................  
+.................... #device ADC=10 
+....................  
+.................... #FUSES NOWDT                    //No Watch Dog Timer 
+....................  
+.................... #use delay(internal=1000000)  
+*
+016E:  CLRF   FEA
+0170:  MOVLW  9C
+0172:  MOVWF  FE9
+0174:  MOVF   FEF,W
+0176:  BZ    0184
+0178:  MOVLW  52
+017A:  MOVWF  00
+017C:  DECFSZ 00,F
+017E:  BRA    017C
+0180:  DECFSZ FEF,F
+0182:  BRA    0178
+0184:  RETURN 0
+.................... #use i2c(SLAVE, SDA=PIN_B4, SCL=PIN_B6, address=0x2) 
+*
+00FC:  MOVF   FC9,W
+00FE:  MOVFF  9D,FC9
+0102:  BSF    FC6.4
+0104:  BCF    F9E.3
+0106:  BTFSC  FC7.0
+0108:  BRA    0106
+010A:  CLRF   01
+010C:  BTFSS  FC5.6
+010E:  INCF   01,F
+0110:  GOTO   0168 (RETURN)
+....................  
+.................... #define green_led PIN_C2 
+.................... #define red_led   PIN_B5 
+....................  
+.................... //Checks if any of the wires are cut, main loop 
+.................... int8 check_wires(int8 this_checked[], int8 &correct_wires_left); 
+.................... //Gets the main module LED status and sends it to series variable 
+.................... void get_led_status(int8 incoming); 
+.................... //Checks if the correct wire was pulled out and incorrect ones 
+.................... void check_wire_status(int8 wire_to_cut, int8 wire_cut[]); 
+....................  
+.................... //Definition of wires that can be cut/pulled out 
+.................... #define wire8 PIN_B5 
+.................... #define wire7 PIN_B7 
+.................... #define wire6 PIN_C7 
+.................... #define wire5 PIN_C6 
+.................... #define wire4 PIN_C3 
+.................... #define wire3 PIN_C4 
+.................... #define wire2 PIN_C5 
+.................... #define wire1 PIN_A5 
+....................  
+.................... //definition of led, which turns on, when module is solved 
+.................... #define defused_led  PIN_C2 
+....................  
+....................  
+.................... int8 data = 0;                                           //data is information to be sent 
+....................  
+.................... int8 incoming, state;                                    //incoming is the data from the i2c channel state is direction of data coming or going 
+....................  
+.................... int8 hp = -1;                                            //The main modules generated HP 
+.................... int8 min = -1;                                           //The main modules generated minutes 
+.................... int8 sec = -1;                                           //The main modules generated seconds 
+.................... int8 series[8] = {-1, -1, -1, -1, -1, -1, -1, -1};       //The main modules generated led sequence 
+....................                                                          //We use 8 bits, because I2C channel is 8 bits, even though we only need 4 bits 
+....................  
+.................... #INT_SSP  
+.................... void i2c_interupt (void){  
+....................    state = i2c_isr_state();  
+0114:  BTFSC  FC7.5
+0116:  BRA    011E
+0118:  CLRF   27
+011A:  BTFSC  FC7.2
+011C:  BSF    27.7
+011E:  MOVF   27,W
+0120:  INCF   27,F
+0122:  MOVWF  1B
+....................      
+....................    if(state < 0x80){                                     //Master is sending data  
+0124:  MOVF   1B,W
+0126:  SUBLW  7F
+0128:  BNC   015E
+....................       incoming = i2c_read();  
+012A:  BCF    FC6.6
+012C:  BTFSS  FC7.0
+012E:  BRA    012C
+0130:  MOVF   FC9,W
+0132:  BSF    FC6.4
+0134:  MOVWF  1A
+....................       if(state == 1){                      
+0136:  DECFSZ 1B,W
+0138:  BRA    013E
+....................          hp = incoming; 
+013A:  MOVFF  1A,1C
+....................       } 
+....................       if(state == 2){                      
+013E:  MOVF   1B,W
+0140:  SUBLW  02
+0142:  BNZ   0148
+....................          min = incoming; 
+0144:  MOVFF  1A,1D
+....................       } 
+....................       if(state == 3){ 
+0148:  MOVF   1B,W
+014A:  SUBLW  03
+014C:  BNZ   0152
+....................          sec = incoming; 
+014E:  MOVFF  1A,1E
+....................       } 
+....................       if(state == 4){ 
+0152:  MOVF   1B,W
+0154:  SUBLW  04
+0156:  BNZ   015E
+....................          get_led_status(incoming); 
+0158:  MOVFF  1A,9D
+015C:  BRA    00AE
+....................       } 
+....................    } 
+....................     
+....................    if (state == 0x80){                                   //Not a recieve nor send byte  
+015E:  MOVF   1B,W
+0160:  SUBLW  80
+0162:  BNZ   0168
+....................       i2c_write(0);                                      //Dummy send so I2C doesnt lock up 
+0164:  CLRF   x9D
+0166:  BRA    00FC
+....................    }  
+....................    
+0168:  BCF    F9E.3
+016A:  GOTO   0060
+.................... } 
+....................  
+....................  
+.................... void main() { 
+*
+0578:  CLRF   FF8
+057A:  BCF    FD0.7
+057C:  BSF    07.7
+057E:  MOVLW  30
+0580:  MOVWF  FD3
+0582:  BCF    F9B.6
+0584:  BCF    F9B.7
+0586:  BSF    F93.6
+0588:  BSF    F93.4
+058A:  MOVLW  02
+058C:  MOVWF  FC8
+058E:  MOVLW  36
+0590:  MOVWF  FC6
+0592:  BSF    FC5.0
+0594:  BSF    FC5.7
+0596:  CLRF   19
+0598:  SETF   1C
+059A:  SETF   1D
+059C:  SETF   1E
+059E:  MOVLW  03
+05A0:  MOVWF  27
+05A2:  MOVLW  00
+05A4:  MOVWF  F7E
+05A6:  BCF    FC1.0
+05A8:  BCF    FC1.1
+05AA:  BCF    FC1.2
+05AC:  BCF    FC1.3
+05AE:  MOVWF  F7F
+05B0:  CLRF   F6C
+05B2:  CLRF   F6B
+05B4:  CLRF   F6D
+05B6:  SETF   1F
+05B8:  SETF   20
+05BA:  SETF   21
+05BC:  SETF   22
+05BE:  SETF   23
+05C0:  SETF   24
+05C2:  SETF   25
+05C4:  SETF   26
+....................    //I2C init interrupts 
+....................    enable_interrupts(INT_SSP);  
+05C6:  BSF    F9D.3
+....................    enable_interrupts(GLOBAL);  
+05C8:  MOVLW  C0
+05CA:  IORWF  FF2,F
+....................  
+....................    int8 this_checked[99]; 
+....................    for(int i = 0; i < 99; i++){ 
+05CC:  CLRF   x8B
+05CE:  MOVF   x8B,W
+05D0:  SUBLW  62
+05D2:  BNC   05E8
+....................       this_checked[i] = 0; 
+05D4:  CLRF   03
+05D6:  MOVF   x8B,W
+05D8:  ADDLW  28
+05DA:  MOVWF  FE9
+05DC:  MOVLW  00
+05DE:  ADDWFC 03,W
+05E0:  MOVWF  FEA
+05E2:  CLRF   FEF
+05E4:  INCF   x8B,F
+05E6:  BRA    05CE
+....................    } 
+....................     
+....................    int8 correct_wires_left = 2;            //How many wires left to cut 
+05E8:  MOVLW  02
+05EA:  MOVWF  x8C
+....................     
+....................    while(TRUE){ 
+....................       check_wires(this_checked, correct_wires_left); 
+05EC:  CLRF   x8E
+05EE:  MOVLW  28
+05F0:  MOVWF  x8D
+*
+0908:  BRA    05EC
+....................    } 
+....................  
+.................... } 
+....................  
+090A:  SLEEP 
+.................... int8 check_wires(int8 this_checked[], int8 &correct_wires_left){ 
+....................    int8 wire_cut[6] = {0, 0, 0, 0, 0, 0};  //Boolean if the wire was cut 
+*
+05F2:  CLRF   x8F
+05F4:  CLRF   x90
+05F6:  CLRF   x91
+05F8:  CLRF   x92
+05FA:  CLRF   x93
+05FC:  CLRF   x94
+....................     
+....................    //If HP is 2 
+....................    if(hp == 2 && correct_wires_left >= 1){ 
+05FE:  MOVF   1C,W
+0600:  SUBLW  02
+0602:  BTFSS  FD8.2
+0604:  BRA    077C
+0606:  MOVF   x8C,W
+0608:  SUBLW  00
+060A:  BTFSC  FD8.0
+060C:  BRA    077C
+....................       //First Led, orange wire 
+....................       if(series[7] == 1 && this_checked[0] == 0){ 
+060E:  DECFSZ 26,W
+0610:  BRA    0642
+0612:  MOVFF  8D,FE9
+0616:  MOVFF  8E,FEA
+061A:  MOVF   FEF,F
+061C:  BNZ   0642
+....................          check_wire_status(0, wire_cut); 
+061E:  CLRF   x96
+0620:  CLRF   x98
+0622:  MOVLW  8F
+0624:  MOVWF  x97
+0626:  RCALL  0186
+....................          correct_wires_left -= 1; 
+0628:  MOVLW  01
+062A:  SUBWF  x8C,F
+....................          this_checked[0] = 1; 
+062C:  MOVFF  8D,FE9
+0630:  MOVFF  8E,FEA
+0634:  MOVLW  01
+0636:  MOVWF  FEF
+....................          if(correct_wires_left <= 0){ 
+0638:  MOVF   x8C,F
+063A:  BNZ   0642
+....................             return 0; 
+063C:  MOVLW  00
+063E:  MOVWF  01
+0640:  BRA    0908
+....................          } 
+....................       } 
+....................       //Second Led, violet wire 
+....................       if(series[6] == 1 && this_checked[1] == 0){ 
+0642:  DECFSZ 25,W
+0644:  BRA    067E
+0646:  MOVLW  01
+0648:  ADDWF  x8D,W
+064A:  MOVWF  FE9
+064C:  MOVLW  00
+064E:  ADDWFC x8E,W
+0650:  MOVWF  FEA
+0652:  MOVF   FEF,F
+0654:  BNZ   067E
+....................          check_wire_status(5, wire_cut); 
+0656:  MOVLW  05
+0658:  MOVWF  x96
+065A:  CLRF   x98
+065C:  MOVLW  8F
+065E:  MOVWF  x97
+0660:  RCALL  0186
+....................          correct_wires_left -= 1; 
+0662:  MOVLW  01
+0664:  SUBWF  x8C,F
+....................          this_checked[1] = 1; 
+0666:  ADDWF  x8D,W
+0668:  MOVWF  FE9
+066A:  MOVLW  00
+066C:  ADDWFC x8E,W
+066E:  MOVWF  FEA
+0670:  MOVLW  01
+0672:  MOVWF  FEF
+....................          if(correct_wires_left <= 0){ 
+0674:  MOVF   x8C,F
+0676:  BNZ   067E
+....................             return 0; 
+0678:  MOVLW  00
+067A:  MOVWF  01
+067C:  BRA    0908
+....................          } 
+....................       } 
+....................       //3 and 4 Leds, brown wire 
+....................       if(series[5] == 1 && series[4] == 1 && this_checked[2] == 0){ 
+067E:  DECFSZ 24,W
+0680:  BRA    06C0
+0682:  DECFSZ 23,W
+0684:  BRA    06C0
+0686:  MOVLW  02
+0688:  ADDWF  x8D,W
+068A:  MOVWF  FE9
+068C:  MOVLW  00
+068E:  ADDWFC x8E,W
+0690:  MOVWF  FEA
+0692:  MOVF   FEF,F
+0694:  BNZ   06C0
+....................          check_wire_status(4, wire_cut); 
+0696:  MOVLW  04
+0698:  MOVWF  x96
+069A:  CLRF   x98
+069C:  MOVLW  8F
+069E:  MOVWF  x97
+06A0:  RCALL  0186
+....................          correct_wires_left -= 1; 
+06A2:  MOVLW  01
+06A4:  SUBWF  x8C,F
+....................          this_checked[2] = 1; 
+06A6:  MOVLW  02
+06A8:  ADDWF  x8D,W
+06AA:  MOVWF  FE9
+06AC:  MOVLW  00
+06AE:  ADDWFC x8E,W
+06B0:  MOVWF  FEA
+06B2:  MOVLW  01
+06B4:  MOVWF  FEF
+....................          if(correct_wires_left <= 0){ 
+06B6:  MOVF   x8C,F
+06B8:  BNZ   06C0
+....................             return 0; 
+06BA:  MOVLW  00
+06BC:  MOVWF  01
+06BE:  BRA    0908
+....................          } 
+....................       } 
+....................       //3 or 4 Leds, grey wire 
+....................       if((series[5] == 1 || series[4] == 1) && this_checked[3] == 0){ 
+06C0:  DECFSZ 24,W
+06C2:  BRA    06C6
+06C4:  BRA    06CA
+06C6:  DECFSZ 23,W
+06C8:  BRA    0708
+06CA:  MOVLW  03
+06CC:  ADDWF  x8D,W
+06CE:  MOVWF  FE9
+06D0:  MOVLW  00
+06D2:  ADDWFC x8E,W
+06D4:  MOVWF  FEA
+06D6:  MOVF   FEF,F
+06D8:  BNZ   0708
+....................          check_wire_status(3, wire_cut); 
+06DA:  MOVLW  03
+06DC:  MOVWF  x96
+06DE:  CLRF   x98
+06E0:  MOVLW  8F
+06E2:  MOVWF  x97
+06E4:  RCALL  0186
+....................          correct_wires_left -= 1; 
+06E6:  MOVLW  01
+06E8:  SUBWF  x8C,F
+....................          this_checked[3] = 1; 
+06EA:  MOVLW  03
+06EC:  ADDWF  x8D,W
+06EE:  MOVWF  FE9
+06F0:  MOVLW  00
+06F2:  ADDWFC x8E,W
+06F4:  MOVWF  FEA
+06F6:  MOVLW  01
+06F8:  MOVWF  FEF
+....................          output_high(defused_led); 
+06FA:  BCF    F94.2
+06FC:  BSF    F8B.2
+....................          if(correct_wires_left <= 0){ 
+06FE:  MOVF   x8C,F
+0700:  BNZ   0708
+....................             return 0; 
+0702:  MOVLW  00
+0704:  MOVWF  01
+0706:  BRA    0908
+....................          } 
+....................       } 
+....................       //Other, yellow wire 
+....................       if(this_checked[4] == 0){ 
+0708:  MOVLW  04
+070A:  ADDWF  x8D,W
+070C:  MOVWF  FE9
+070E:  MOVLW  00
+0710:  ADDWFC x8E,W
+0712:  MOVWF  FEA
+0714:  MOVF   FEF,F
+0716:  BNZ   0742
+....................          check_wire_status(1, wire_cut); 
+0718:  MOVLW  01
+071A:  MOVWF  x96
+071C:  CLRF   x98
+071E:  MOVLW  8F
+0720:  MOVWF  x97
+0722:  RCALL  0186
+....................          correct_wires_left -= 1; 
+0724:  MOVLW  01
+0726:  SUBWF  x8C,F
+....................          this_checked[4] = 1; 
+0728:  MOVLW  04
+072A:  ADDWF  x8D,W
+072C:  MOVWF  FE9
+072E:  MOVLW  00
+0730:  ADDWFC x8E,W
+0732:  MOVWF  FEA
+0734:  MOVLW  01
+0736:  MOVWF  FEF
+....................          if(correct_wires_left <= 0){ 
+0738:  MOVF   x8C,F
+073A:  BNZ   0742
+....................             return 0; 
+073C:  MOVLW  00
+073E:  MOVWF  01
+0740:  BRA    0908
+....................          } 
+....................       } 
+....................       //If all else fails, black wire 
+....................       if(this_checked[5] == 0){ 
+0742:  MOVLW  05
+0744:  ADDWF  x8D,W
+0746:  MOVWF  FE9
+0748:  MOVLW  00
+074A:  ADDWFC x8E,W
+074C:  MOVWF  FEA
+074E:  MOVF   FEF,F
+0750:  BNZ   077C
+....................          check_wire_status(2, wire_cut); 
+0752:  MOVLW  02
+0754:  MOVWF  x96
+0756:  CLRF   x98
+0758:  MOVLW  8F
+075A:  MOVWF  x97
+075C:  RCALL  0186
+....................          correct_wires_left -= 1; 
+075E:  MOVLW  01
+0760:  SUBWF  x8C,F
+....................          this_checked[5] = 1; 
+0762:  MOVLW  05
+0764:  ADDWF  x8D,W
+0766:  MOVWF  FE9
+0768:  MOVLW  00
+076A:  ADDWFC x8E,W
+076C:  MOVWF  FEA
+076E:  MOVLW  01
+0770:  MOVWF  FEF
+....................          if(correct_wires_left <= 0){ 
+0772:  MOVF   x8C,F
+0774:  BNZ   077C
+....................             return 0; 
+0776:  MOVLW  00
+0778:  MOVWF  01
+077A:  BRA    0908
+....................          } 
+....................       } 
+....................    } 
+....................     
+....................    //If HP is 1 
+....................    if(hp == 1 && correct_wires_left >= 1){ 
+077C:  DECFSZ 1C,W
+077E:  BRA    0900
+0780:  MOVF   x8C,W
+0782:  SUBLW  00
+0784:  BTFSC  FD8.0
+0786:  BRA    0900
+....................       //First Led, brown wire 
+....................       if(series[7] == 1 && this_checked[6] == 0){ 
+0788:  DECFSZ 26,W
+078A:  BRA    07C6
+078C:  MOVLW  06
+078E:  ADDWF  x8D,W
+0790:  MOVWF  FE9
+0792:  MOVLW  00
+0794:  ADDWFC x8E,W
+0796:  MOVWF  FEA
+0798:  MOVF   FEF,F
+079A:  BNZ   07C6
+....................          check_wire_status(4, wire_cut); 
+079C:  MOVLW  04
+079E:  MOVWF  x96
+07A0:  CLRF   x98
+07A2:  MOVLW  8F
+07A4:  MOVWF  x97
+07A6:  RCALL  0186
+....................          correct_wires_left -= 1; 
+07A8:  MOVLW  01
+07AA:  SUBWF  x8C,F
+....................          this_checked[6] = 1; 
+07AC:  MOVLW  06
+07AE:  ADDWF  x8D,W
+07B0:  MOVWF  FE9
+07B2:  MOVLW  00
+07B4:  ADDWFC x8E,W
+07B6:  MOVWF  FEA
+07B8:  MOVLW  01
+07BA:  MOVWF  FEF
+....................          if(correct_wires_left <= 0){ 
+07BC:  MOVF   x8C,F
+07BE:  BNZ   07C6
+....................             return 0; 
+07C0:  MOVLW  00
+07C2:  MOVWF  01
+07C4:  BRA    0908
+....................          } 
+....................       } 
+....................       //Second Led, yellow wire 
+....................       if(series[6] == 1 && this_checked[7] == 0){ 
+07C6:  DECFSZ 25,W
+07C8:  BRA    0804
+07CA:  MOVLW  07
+07CC:  ADDWF  x8D,W
+07CE:  MOVWF  FE9
+07D0:  MOVLW  00
+07D2:  ADDWFC x8E,W
+07D4:  MOVWF  FEA
+07D6:  MOVF   FEF,F
+07D8:  BNZ   0804
+....................          check_wire_status(1, wire_cut); 
+07DA:  MOVLW  01
+07DC:  MOVWF  x96
+07DE:  CLRF   x98
+07E0:  MOVLW  8F
+07E2:  MOVWF  x97
+07E4:  RCALL  0186
+....................          correct_wires_left -= 1; 
+07E6:  MOVLW  01
+07E8:  SUBWF  x8C,F
+....................          this_checked[7] = 1; 
+07EA:  MOVLW  07
+07EC:  ADDWF  x8D,W
+07EE:  MOVWF  FE9
+07F0:  MOVLW  00
+07F2:  ADDWFC x8E,W
+07F4:  MOVWF  FEA
+07F6:  MOVLW  01
+07F8:  MOVWF  FEF
+....................          if(correct_wires_left <= 0){ 
+07FA:  MOVF   x8C,F
+07FC:  BNZ   0804
+....................             return 0; 
+07FE:  MOVLW  00
+0800:  MOVWF  01
+0802:  BRA    0908
+....................          } 
+....................       } 
+....................       //3 and 4 Leds, black wire 
+....................       if(series[5] == 1 && series[4] == 1 && this_checked[8] == 0){ 
+0804:  DECFSZ 24,W
+0806:  BRA    0846
+0808:  DECFSZ 23,W
+080A:  BRA    0846
+080C:  MOVLW  08
+080E:  ADDWF  x8D,W
+0810:  MOVWF  FE9
+0812:  MOVLW  00
+0814:  ADDWFC x8E,W
+0816:  MOVWF  FEA
+0818:  MOVF   FEF,F
+081A:  BNZ   0846
+....................          check_wire_status(2, wire_cut); 
+081C:  MOVLW  02
+081E:  MOVWF  x96
+0820:  CLRF   x98
+0822:  MOVLW  8F
+0824:  MOVWF  x97
+0826:  RCALL  0186
+....................          correct_wires_left -= 1; 
+0828:  MOVLW  01
+082A:  SUBWF  x8C,F
+....................          this_checked[8] = 1; 
+082C:  MOVLW  08
+082E:  ADDWF  x8D,W
+0830:  MOVWF  FE9
+0832:  MOVLW  00
+0834:  ADDWFC x8E,W
+0836:  MOVWF  FEA
+0838:  MOVLW  01
+083A:  MOVWF  FEF
+....................          if(correct_wires_left <= 0){ 
+083C:  MOVF   x8C,F
+083E:  BNZ   0846
+....................             return 0; 
+0840:  MOVLW  00
+0842:  MOVWF  01
+0844:  BRA    0908
+....................          } 
+....................       } 
+....................       //3 or 4 Leds, violet wire 
+....................       if((series[5] == 1 || series[4] == 1) && this_checked[9] == 0){ 
+0846:  DECFSZ 24,W
+0848:  BRA    084C
+084A:  BRA    0850
+084C:  DECFSZ 23,W
+084E:  BRA    088E
+0850:  MOVLW  09
+0852:  ADDWF  x8D,W
+0854:  MOVWF  FE9
+0856:  MOVLW  00
+0858:  ADDWFC x8E,W
+085A:  MOVWF  FEA
+085C:  MOVF   FEF,F
+085E:  BNZ   088E
+....................          check_wire_status(5, wire_cut); 
+0860:  MOVLW  05
+0862:  MOVWF  x96
+0864:  CLRF   x98
+0866:  MOVLW  8F
+0868:  MOVWF  x97
+086A:  RCALL  0186
+....................          correct_wires_left -= 1; 
+086C:  MOVLW  01
+086E:  SUBWF  x8C,F
+....................          this_checked[9] = 1; 
+0870:  MOVLW  09
+0872:  ADDWF  x8D,W
+0874:  MOVWF  FE9
+0876:  MOVLW  00
+0878:  ADDWFC x8E,W
+087A:  MOVWF  FEA
+087C:  MOVLW  01
+087E:  MOVWF  FEF
+....................          output_high(defused_led); 
+0880:  BCF    F94.2
+0882:  BSF    F8B.2
+....................          if(correct_wires_left <= 0){ 
+0884:  MOVF   x8C,F
+0886:  BNZ   088E
+....................             return 0; 
+0888:  MOVLW  00
+088A:  MOVWF  01
+088C:  BRA    0908
+....................          } 
+....................       } 
+....................       //Other, orange wire 
+....................       if(this_checked[10] == 0){ 
+088E:  MOVLW  0A
+0890:  ADDWF  x8D,W
+0892:  MOVWF  FE9
+0894:  MOVLW  00
+0896:  ADDWFC x8E,W
+0898:  MOVWF  FEA
+089A:  MOVF   FEF,F
+089C:  BNZ   08C6
+....................          check_wire_status(0, wire_cut); 
+089E:  CLRF   x96
+08A0:  CLRF   x98
+08A2:  MOVLW  8F
+08A4:  MOVWF  x97
+08A6:  RCALL  0186
+....................          correct_wires_left -= 1; 
+08A8:  MOVLW  01
+08AA:  SUBWF  x8C,F
+....................          this_checked[10] = 1; 
+08AC:  MOVLW  0A
+08AE:  ADDWF  x8D,W
+08B0:  MOVWF  FE9
+08B2:  MOVLW  00
+08B4:  ADDWFC x8E,W
+08B6:  MOVWF  FEA
+08B8:  MOVLW  01
+08BA:  MOVWF  FEF
+....................          if(correct_wires_left <= 0){ 
+08BC:  MOVF   x8C,F
+08BE:  BNZ   08C6
+....................             return 0; 
+08C0:  MOVLW  00
+08C2:  MOVWF  01
+08C4:  BRA    0908
+....................          } 
+....................       } 
+....................       //If all else fails, grey wire 
+....................       if(this_checked[11] == 0){ 
+08C6:  MOVLW  0B
+08C8:  ADDWF  x8D,W
+08CA:  MOVWF  FE9
+08CC:  MOVLW  00
+08CE:  ADDWFC x8E,W
+08D0:  MOVWF  FEA
+08D2:  MOVF   FEF,F
+08D4:  BNZ   0900
+....................          check_wire_status(3, wire_cut); 
+08D6:  MOVLW  03
+08D8:  MOVWF  x96
+08DA:  CLRF   x98
+08DC:  MOVLW  8F
+08DE:  MOVWF  x97
+08E0:  RCALL  0186
+....................          correct_wires_left -= 1; 
+08E2:  MOVLW  01
+08E4:  SUBWF  x8C,F
+....................          this_checked[11] = 1; 
+08E6:  MOVLW  0B
+08E8:  ADDWF  x8D,W
+08EA:  MOVWF  FE9
+08EC:  MOVLW  00
+08EE:  ADDWFC x8E,W
+08F0:  MOVWF  FEA
+08F2:  MOVLW  01
+08F4:  MOVWF  FEF
+....................          if(correct_wires_left <= 0){ 
+08F6:  MOVF   x8C,F
+08F8:  BNZ   0900
+....................             return 0; 
+08FA:  MOVLW  00
+08FC:  MOVWF  01
+08FE:  BRA    0908
+....................          } 
+....................       } 
+....................    } 
+....................     
+....................    if(correct_wires_left <= 0){ 
+0900:  MOVF   x8C,F
+0902:  BNZ   0908
+....................       output_high(defused_led); 
+0904:  BCF    F94.2
+0906:  BSF    F8B.2
+....................    } 
+.................... } 
+....................  
+.................... //Gets the main module LED status and sends it to series variable 
+.................... void get_led_status(int8 incoming){ 
+*
+00AE:  MOVFF  9D,A0
+....................    int c, k; 
+....................    int bin = incoming; 
+....................    for (c = 0; c < 8; ++c){ 
+00B2:  CLRF   x9E
+00B4:  MOVF   x9E,W
+00B6:  SUBLW  07
+00B8:  BNC   00F8
+....................       k = bin >> c; 
+00BA:  MOVFF  A0,9F
+00BE:  MOVF   x9E,W
+00C0:  MOVWF  01
+00C2:  BZ    00CC
+00C4:  BCF    FD8.0
+00C6:  RRCF   x9F,F
+00C8:  DECFSZ 01,F
+00CA:  BRA    00C4
+....................       if (k & 1){ 
+00CC:  BTFSS  x9F.0
+00CE:  BRA    00E4
+....................          series[c] = 1; 
+00D0:  CLRF   03
+00D2:  MOVF   x9E,W
+00D4:  ADDLW  1F
+00D6:  MOVWF  FE9
+00D8:  MOVLW  00
+00DA:  ADDWFC 03,W
+00DC:  MOVWF  FEA
+00DE:  MOVLW  01
+00E0:  MOVWF  FEF
+....................       }else{ 
+00E2:  BRA    00F4
+....................          series[c] = 0; 
+00E4:  CLRF   03
+00E6:  MOVF   x9E,W
+00E8:  ADDLW  1F
+00EA:  MOVWF  FE9
+00EC:  MOVLW  00
+00EE:  ADDWFC 03,W
+00F0:  MOVWF  FEA
+00F2:  CLRF   FEF
+....................       } 
+00F4:  INCF   x9E,F
+00F6:  BRA    00B4
+....................    }  
+00F8:  GOTO   015E (RETURN)
+.................... } 
+....................  
+.................... //Checks if the correct wire was pulled out and incorrect ones 
+.................... void check_wire_status(int8 wire_to_cut, int8 wire_cut[]){ 
+*
+0186:  CLRF   x99
+....................    int8 correct_wire_cut = 0;   //Equals 1 if the correct wire was cut 
+....................  
+....................    //Checks if the correct wire was already cut 
+....................    for(int i = 0; i < 6; i++){ 
+0188:  CLRF   x9A
+018A:  MOVF   x9A,W
+018C:  SUBLW  05
+018E:  BNC   01AE
+....................       if(wire_to_cut == i && wire_cut[i] == 1){ 
+0190:  MOVF   x9A,W
+0192:  SUBWF  x96,W
+0194:  BNZ   01AA
+0196:  MOVF   x9A,W
+0198:  ADDWF  x97,W
+019A:  MOVWF  FE9
+019C:  MOVLW  00
+019E:  ADDWFC x98,W
+01A0:  MOVWF  FEA
+01A2:  DECFSZ FEF,W
+01A4:  BRA    01AA
+....................          correct_wire_cut = 1; 
+01A6:  MOVLW  01
+01A8:  MOVWF  x99
+....................       } 
+01AA:  INCF   x9A,F
+01AC:  BRA    018A
+....................    } 
+....................     
+....................    while(correct_wire_cut == 0){ 
+01AE:  MOVF   x99,F
+01B0:  BTFSS  FD8.2
+01B2:  BRA    0576
+....................       //Checks if the correct wire was cut 
+....................       if(wire_to_cut == 0 && wire_cut[0] == 0 && input_state(wire1) == 0){ 
+01B4:  MOVF   x96,F
+01B6:  BNZ   01DA
+01B8:  MOVFF  97,FE9
+01BC:  MOVFF  98,FEA
+01C0:  MOVF   FEF,F
+01C2:  BNZ   01DA
+01C4:  BTFSC  F80.5
+01C6:  BRA    01DA
+....................          wire_cut[0] = 1; 
+01C8:  MOVFF  97,FE9
+01CC:  MOVFF  98,FEA
+01D0:  MOVLW  01
+01D2:  MOVWF  FEF
+....................          correct_wire_cut = 1; 
+01D4:  MOVWF  x99
+....................          break; 
+01D6:  BRA    0576
+....................       }else if(wire_to_cut == 1 && wire_cut[1] == 0 && input_state(wire2) == 0){ 
+01D8:  BRA    0574
+01DA:  DECFSZ x96,W
+01DC:  BRA    0208
+01DE:  MOVLW  01
+01E0:  ADDWF  x97,W
+01E2:  MOVWF  FE9
+01E4:  MOVLW  00
+01E6:  ADDWFC x98,W
+01E8:  MOVWF  FEA
+01EA:  MOVF   FEF,F
+01EC:  BNZ   0208
+01EE:  BTFSC  F82.5
+01F0:  BRA    0208
+....................          wire_cut[1] = 1; 
+01F2:  MOVLW  01
+01F4:  ADDWF  x97,W
+01F6:  MOVWF  FE9
+01F8:  MOVLW  00
+01FA:  ADDWFC x98,W
+01FC:  MOVWF  FEA
+01FE:  MOVLW  01
+0200:  MOVWF  FEF
+....................          correct_wire_cut = 1; 
+0202:  MOVWF  x99
+....................          break; 
+0204:  BRA    0576
+....................       }else if(wire_to_cut == 2 && wire_cut[2] == 0 && input_state(wire3) == 0){ 
+0206:  BRA    0574
+0208:  MOVF   x96,W
+020A:  SUBLW  02
+020C:  BNZ   0238
+020E:  MOVLW  02
+0210:  ADDWF  x97,W
+0212:  MOVWF  FE9
+0214:  MOVLW  00
+0216:  ADDWFC x98,W
+0218:  MOVWF  FEA
+021A:  MOVF   FEF,F
+021C:  BNZ   0238
+021E:  BTFSC  F82.4
+0220:  BRA    0238
+....................          wire_cut[2] = 1; 
+0222:  MOVLW  02
+0224:  ADDWF  x97,W
+0226:  MOVWF  FE9
+0228:  MOVLW  00
+022A:  ADDWFC x98,W
+022C:  MOVWF  FEA
+022E:  MOVLW  01
+0230:  MOVWF  FEF
+....................          correct_wire_cut = 1; 
+0232:  MOVWF  x99
+....................          break; 
+0234:  BRA    0576
+....................       }else if(wire_to_cut == 3 && wire_cut[3] == 0 && input_state(wire4) == 0){ 
+0236:  BRA    0574
+0238:  MOVF   x96,W
+023A:  SUBLW  03
+023C:  BNZ   0268
+023E:  MOVLW  03
+0240:  ADDWF  x97,W
+0242:  MOVWF  FE9
+0244:  MOVLW  00
+0246:  ADDWFC x98,W
+0248:  MOVWF  FEA
+024A:  MOVF   FEF,F
+024C:  BNZ   0268
+024E:  BTFSC  F82.3
+0250:  BRA    0268
+....................          wire_cut[3] = 1; 
+0252:  MOVLW  03
+0254:  ADDWF  x97,W
+0256:  MOVWF  FE9
+0258:  MOVLW  00
+025A:  ADDWFC x98,W
+025C:  MOVWF  FEA
+025E:  MOVLW  01
+0260:  MOVWF  FEF
+....................          correct_wire_cut = 1; 
+0262:  MOVWF  x99
+....................          break; 
+0264:  BRA    0576
+....................       }else if(wire_to_cut == 4 && wire_cut[4] == 0 && input_state(wire5) == 0){ 
+0266:  BRA    0574
+0268:  MOVF   x96,W
+026A:  SUBLW  04
+026C:  BNZ   0298
+026E:  MOVLW  04
+0270:  ADDWF  x97,W
+0272:  MOVWF  FE9
+0274:  MOVLW  00
+0276:  ADDWFC x98,W
+0278:  MOVWF  FEA
+027A:  MOVF   FEF,F
+027C:  BNZ   0298
+027E:  BTFSC  F82.6
+0280:  BRA    0298
+....................          wire_cut[4] = 1; 
+0282:  MOVLW  04
+0284:  ADDWF  x97,W
+0286:  MOVWF  FE9
+0288:  MOVLW  00
+028A:  ADDWFC x98,W
+028C:  MOVWF  FEA
+028E:  MOVLW  01
+0290:  MOVWF  FEF
+....................          correct_wire_cut = 1; 
+0292:  MOVWF  x99
+....................          break; 
+0294:  BRA    0576
+....................       }else if(wire_to_cut == 5 && wire_cut[5] == 0 && input_state(wire6) == 0){ 
+0296:  BRA    0574
+0298:  MOVF   x96,W
+029A:  SUBLW  05
+029C:  BNZ   02C8
+029E:  MOVLW  05
+02A0:  ADDWF  x97,W
+02A2:  MOVWF  FE9
+02A4:  MOVLW  00
+02A6:  ADDWFC x98,W
+02A8:  MOVWF  FEA
+02AA:  MOVF   FEF,F
+02AC:  BNZ   02C8
+02AE:  BTFSC  F82.7
+02B0:  BRA    02C8
+....................          wire_cut[5] = 1; 
+02B2:  MOVLW  05
+02B4:  ADDWF  x97,W
+02B6:  MOVWF  FE9
+02B8:  MOVLW  00
+02BA:  ADDWFC x98,W
+02BC:  MOVWF  FEA
+02BE:  MOVLW  01
+02C0:  MOVWF  FEF
+....................          correct_wire_cut = 1; 
+02C2:  MOVWF  x99
+....................          break; 
+02C4:  BRA    0576
+....................       } 
+02C6:  BRA    0574
+....................        
+....................       //checks if the wrong wire was cut 
+....................       else if(wire_to_cut != 0 && wire_cut[0] == 0 && input_state(wire1) == 0){ 
+02C8:  MOVF   x96,F
+02CA:  BZ    0332
+02CC:  MOVFF  97,FE9
+02D0:  MOVFF  98,FEA
+02D4:  MOVF   FEF,F
+02D6:  BNZ   0332
+02D8:  BTFSC  F80.5
+02DA:  BRA    0332
+....................          //Decrease hp 
+....................          wire_cut[0] = 1; 
+02DC:  MOVFF  97,FE9
+02E0:  MOVFF  98,FEA
+02E4:  MOVLW  01
+02E6:  MOVWF  FEF
+....................          output_high(defused_led); 
+02E8:  BCF    F94.2
+02EA:  BSF    F8B.2
+....................          delay_ms(500); 
+02EC:  MOVLW  02
+02EE:  MOVWF  x9B
+02F0:  MOVLW  FA
+02F2:  MOVWF  x9C
+02F4:  RCALL  016E
+02F6:  DECFSZ x9B,F
+02F8:  BRA    02F0
+....................          output_low(defused_led); 
+02FA:  BCF    F94.2
+02FC:  BCF    F8B.2
+....................          delay_ms(500); 
+02FE:  MOVLW  02
+0300:  MOVWF  x9B
+0302:  MOVLW  FA
+0304:  MOVWF  x9C
+0306:  RCALL  016E
+0308:  DECFSZ x9B,F
+030A:  BRA    0302
+....................          output_high(defused_led); 
+030C:  BCF    F94.2
+030E:  BSF    F8B.2
+....................          delay_ms(500); 
+0310:  MOVLW  02
+0312:  MOVWF  x9B
+0314:  MOVLW  FA
+0316:  MOVWF  x9C
+0318:  RCALL  016E
+031A:  DECFSZ x9B,F
+031C:  BRA    0314
+....................          output_low(defused_led); 
+031E:  BCF    F94.2
+0320:  BCF    F8B.2
+....................          delay_ms(500); 
+0322:  MOVLW  02
+0324:  MOVWF  x9B
+0326:  MOVLW  FA
+0328:  MOVWF  x9C
+032A:  RCALL  016E
+032C:  DECFSZ x9B,F
+032E:  BRA    0326
+....................       }else if(wire_to_cut != 1 && wire_cut[1] == 0 && input_state(wire2) == 0){ 
+0330:  BRA    0574
+0332:  DECFSZ x96,W
+0334:  BRA    0338
+0336:  BRA    03A6
+0338:  MOVLW  01
+033A:  ADDWF  x97,W
+033C:  MOVWF  FE9
+033E:  MOVLW  00
+0340:  ADDWFC x98,W
+0342:  MOVWF  FEA
+0344:  MOVF   FEF,F
+0346:  BNZ   03A6
+0348:  BTFSC  F82.5
+034A:  BRA    03A6
+....................          //Decrease hp 
+....................          wire_cut[1] = 1; 
+034C:  MOVLW  01
+034E:  ADDWF  x97,W
+0350:  MOVWF  FE9
+0352:  MOVLW  00
+0354:  ADDWFC x98,W
+0356:  MOVWF  FEA
+0358:  MOVLW  01
+035A:  MOVWF  FEF
+....................          output_high(defused_led); 
+035C:  BCF    F94.2
+035E:  BSF    F8B.2
+....................          delay_ms(500); 
+0360:  MOVLW  02
+0362:  MOVWF  x9B
+0364:  MOVLW  FA
+0366:  MOVWF  x9C
+0368:  RCALL  016E
+036A:  DECFSZ x9B,F
+036C:  BRA    0364
+....................          output_low(defused_led); 
+036E:  BCF    F94.2
+0370:  BCF    F8B.2
+....................          delay_ms(500); 
+0372:  MOVLW  02
+0374:  MOVWF  x9B
+0376:  MOVLW  FA
+0378:  MOVWF  x9C
+037A:  RCALL  016E
+037C:  DECFSZ x9B,F
+037E:  BRA    0376
+....................          output_high(defused_led); 
+0380:  BCF    F94.2
+0382:  BSF    F8B.2
+....................          delay_ms(500); 
+0384:  MOVLW  02
+0386:  MOVWF  x9B
+0388:  MOVLW  FA
+038A:  MOVWF  x9C
+038C:  RCALL  016E
+038E:  DECFSZ x9B,F
+0390:  BRA    0388
+....................          output_low(defused_led); 
+0392:  BCF    F94.2
+0394:  BCF    F8B.2
+....................          delay_ms(500); 
+0396:  MOVLW  02
+0398:  MOVWF  x9B
+039A:  MOVLW  FA
+039C:  MOVWF  x9C
+039E:  RCALL  016E
+03A0:  DECFSZ x9B,F
+03A2:  BRA    039A
+....................       }else if(wire_to_cut != 2 && wire_cut[2] == 0 && input_state(wire3) == 0){ 
+03A4:  BRA    0574
+03A6:  MOVF   x96,W
+03A8:  SUBLW  02
+03AA:  BZ    041A
+03AC:  MOVLW  02
+03AE:  ADDWF  x97,W
+03B0:  MOVWF  FE9
+03B2:  MOVLW  00
+03B4:  ADDWFC x98,W
+03B6:  MOVWF  FEA
+03B8:  MOVF   FEF,F
+03BA:  BNZ   041A
+03BC:  BTFSC  F82.4
+03BE:  BRA    041A
+....................          //Decrease hp 
+....................          wire_cut[2] = 1; 
+03C0:  MOVLW  02
+03C2:  ADDWF  x97,W
+03C4:  MOVWF  FE9
+03C6:  MOVLW  00
+03C8:  ADDWFC x98,W
+03CA:  MOVWF  FEA
+03CC:  MOVLW  01
+03CE:  MOVWF  FEF
+....................          output_high(defused_led); 
+03D0:  BCF    F94.2
+03D2:  BSF    F8B.2
+....................          delay_ms(500); 
+03D4:  MOVLW  02
+03D6:  MOVWF  x9B
+03D8:  MOVLW  FA
+03DA:  MOVWF  x9C
+03DC:  RCALL  016E
+03DE:  DECFSZ x9B,F
+03E0:  BRA    03D8
+....................          output_low(defused_led); 
+03E2:  BCF    F94.2
+03E4:  BCF    F8B.2
+....................          delay_ms(500); 
+03E6:  MOVLW  02
+03E8:  MOVWF  x9B
+03EA:  MOVLW  FA
+03EC:  MOVWF  x9C
+03EE:  RCALL  016E
+03F0:  DECFSZ x9B,F
+03F2:  BRA    03EA
+....................          output_high(defused_led); 
+03F4:  BCF    F94.2
+03F6:  BSF    F8B.2
+....................          delay_ms(500); 
+03F8:  MOVLW  02
+03FA:  MOVWF  x9B
+03FC:  MOVLW  FA
+03FE:  MOVWF  x9C
+0400:  RCALL  016E
+0402:  DECFSZ x9B,F
+0404:  BRA    03FC
+....................          output_low(defused_led); 
+0406:  BCF    F94.2
+0408:  BCF    F8B.2
+....................          delay_ms(500); 
+040A:  MOVLW  02
+040C:  MOVWF  x9B
+040E:  MOVLW  FA
+0410:  MOVWF  x9C
+0412:  RCALL  016E
+0414:  DECFSZ x9B,F
+0416:  BRA    040E
+....................       }else if(wire_to_cut != 3 && wire_cut[3] == 0 && input_state(wire4) == 0){ 
+0418:  BRA    0574
+041A:  MOVF   x96,W
+041C:  SUBLW  03
+041E:  BZ    048E
+0420:  MOVLW  03
+0422:  ADDWF  x97,W
+0424:  MOVWF  FE9
+0426:  MOVLW  00
+0428:  ADDWFC x98,W
+042A:  MOVWF  FEA
+042C:  MOVF   FEF,F
+042E:  BNZ   048E
+0430:  BTFSC  F82.3
+0432:  BRA    048E
+....................          //Decrease hp 
+....................          wire_cut[3] = 1; 
+0434:  MOVLW  03
+0436:  ADDWF  x97,W
+0438:  MOVWF  FE9
+043A:  MOVLW  00
+043C:  ADDWFC x98,W
+043E:  MOVWF  FEA
+0440:  MOVLW  01
+0442:  MOVWF  FEF
+....................          output_high(defused_led); 
+0444:  BCF    F94.2
+0446:  BSF    F8B.2
+....................          delay_ms(500); 
+0448:  MOVLW  02
+044A:  MOVWF  x9B
+044C:  MOVLW  FA
+044E:  MOVWF  x9C
+0450:  RCALL  016E
+0452:  DECFSZ x9B,F
+0454:  BRA    044C
+....................          output_low(defused_led); 
+0456:  BCF    F94.2
+0458:  BCF    F8B.2
+....................          delay_ms(500); 
+045A:  MOVLW  02
+045C:  MOVWF  x9B
+045E:  MOVLW  FA
+0460:  MOVWF  x9C
+0462:  RCALL  016E
+0464:  DECFSZ x9B,F
+0466:  BRA    045E
+....................          output_high(defused_led); 
+0468:  BCF    F94.2
+046A:  BSF    F8B.2
+....................          delay_ms(500); 
+046C:  MOVLW  02
+046E:  MOVWF  x9B
+0470:  MOVLW  FA
+0472:  MOVWF  x9C
+0474:  RCALL  016E
+0476:  DECFSZ x9B,F
+0478:  BRA    0470
+....................          output_low(defused_led); 
+047A:  BCF    F94.2
+047C:  BCF    F8B.2
+....................          delay_ms(500); 
+047E:  MOVLW  02
+0480:  MOVWF  x9B
+0482:  MOVLW  FA
+0484:  MOVWF  x9C
+0486:  RCALL  016E
+0488:  DECFSZ x9B,F
+048A:  BRA    0482
+....................       }else if(wire_to_cut != 4 && wire_cut[4] == 0 && input_state(wire5) == 0){ 
+048C:  BRA    0574
+048E:  MOVF   x96,W
+0490:  SUBLW  04
+0492:  BZ    0502
+0494:  MOVLW  04
+0496:  ADDWF  x97,W
+0498:  MOVWF  FE9
+049A:  MOVLW  00
+049C:  ADDWFC x98,W
+049E:  MOVWF  FEA
+04A0:  MOVF   FEF,F
+04A2:  BNZ   0502
+04A4:  BTFSC  F82.6
+04A6:  BRA    0502
+....................          //Decrease hp 
+....................          wire_cut[4] = 1; 
+04A8:  MOVLW  04
+04AA:  ADDWF  x97,W
+04AC:  MOVWF  FE9
+04AE:  MOVLW  00
+04B0:  ADDWFC x98,W
+04B2:  MOVWF  FEA
+04B4:  MOVLW  01
+04B6:  MOVWF  FEF
+....................          output_high(defused_led); 
+04B8:  BCF    F94.2
+04BA:  BSF    F8B.2
+....................          delay_ms(500); 
+04BC:  MOVLW  02
+04BE:  MOVWF  x9B
+04C0:  MOVLW  FA
+04C2:  MOVWF  x9C
+04C4:  RCALL  016E
+04C6:  DECFSZ x9B,F
+04C8:  BRA    04C0
+....................          output_low(defused_led); 
+04CA:  BCF    F94.2
+04CC:  BCF    F8B.2
+....................          delay_ms(500); 
+04CE:  MOVLW  02
+04D0:  MOVWF  x9B
+04D2:  MOVLW  FA
+04D4:  MOVWF  x9C
+04D6:  RCALL  016E
+04D8:  DECFSZ x9B,F
+04DA:  BRA    04D2
+....................          output_high(defused_led); 
+04DC:  BCF    F94.2
+04DE:  BSF    F8B.2
+....................          delay_ms(500); 
+04E0:  MOVLW  02
+04E2:  MOVWF  x9B
+04E4:  MOVLW  FA
+04E6:  MOVWF  x9C
+04E8:  RCALL  016E
+04EA:  DECFSZ x9B,F
+04EC:  BRA    04E4
+....................          output_low(defused_led); 
+04EE:  BCF    F94.2
+04F0:  BCF    F8B.2
+....................          delay_ms(500); 
+04F2:  MOVLW  02
+04F4:  MOVWF  x9B
+04F6:  MOVLW  FA
+04F8:  MOVWF  x9C
+04FA:  RCALL  016E
+04FC:  DECFSZ x9B,F
+04FE:  BRA    04F6
+....................       }else if(wire_to_cut != 5 && wire_cut[5] == 0 && input_state(wire6) == 0){ 
+0500:  BRA    0574
+0502:  MOVF   x96,W
+0504:  SUBLW  05
+0506:  BZ    0574
+0508:  MOVLW  05
+050A:  ADDWF  x97,W
+050C:  MOVWF  FE9
+050E:  MOVLW  00
+0510:  ADDWFC x98,W
+0512:  MOVWF  FEA
+0514:  MOVF   FEF,F
+0516:  BNZ   0574
+0518:  BTFSC  F82.7
+051A:  BRA    0574
+....................          //Decrease hp 
+....................          wire_cut[5] = 1; 
+051C:  MOVLW  05
+051E:  ADDWF  x97,W
+0520:  MOVWF  FE9
+0522:  MOVLW  00
+0524:  ADDWFC x98,W
+0526:  MOVWF  FEA
+0528:  MOVLW  01
+052A:  MOVWF  FEF
+....................          output_high(defused_led); 
+052C:  BCF    F94.2
+052E:  BSF    F8B.2
+....................          delay_ms(500); 
+0530:  MOVLW  02
+0532:  MOVWF  x9B
+0534:  MOVLW  FA
+0536:  MOVWF  x9C
+0538:  RCALL  016E
+053A:  DECFSZ x9B,F
+053C:  BRA    0534
+....................          output_low(defused_led); 
+053E:  BCF    F94.2
+0540:  BCF    F8B.2
+....................          delay_ms(500); 
+0542:  MOVLW  02
+0544:  MOVWF  x9B
+0546:  MOVLW  FA
+0548:  MOVWF  x9C
+054A:  RCALL  016E
+054C:  DECFSZ x9B,F
+054E:  BRA    0546
+....................          output_high(defused_led); 
+0550:  BCF    F94.2
+0552:  BSF    F8B.2
+....................          delay_ms(500); 
+0554:  MOVLW  02
+0556:  MOVWF  x9B
+0558:  MOVLW  FA
+055A:  MOVWF  x9C
+055C:  RCALL  016E
+055E:  DECFSZ x9B,F
+0560:  BRA    0558
+....................          output_low(defused_led); 
+0562:  BCF    F94.2
+0564:  BCF    F8B.2
+....................          delay_ms(500); 
+0566:  MOVLW  02
+0568:  MOVWF  x9B
+056A:  MOVLW  FA
+056C:  MOVWF  x9C
+056E:  RCALL  016E
+0570:  DECFSZ x9B,F
+0572:  BRA    056A
+....................       } 
+0574:  BRA    01AE
+....................    } 
+0576:  RETURN 0
+.................... } 
+
+Configuration Fuses:
+   Word  1: E800   INTRC_IO NOPLLEN PCLKEN FCMEN IESO
+   Word  2: 1E1E   PUT BROWNOUT BORV19 NOWDT WDT32768
+   Word  3: 8800   HFOFST MCLR
+   Word  4: 0089   STVREN NOLVP BBSIZ2K NOXINST NODEBUG
+   Word  5: C003   NOPROTECT NOCPB NOCPD
+   Word  6: E003   NOWRT NOWRTC NOWRTB NOWRTD
+   Word  7: 4003   NOEBTR NOEBTRB

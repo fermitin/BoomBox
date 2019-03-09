@@ -1,0 +1,6 @@
+ÀÄMain module 0
+   ÃÄMAIN  0/110  Ram=0
+   ³  ÀÄ@cinit1  (Inline)  Ram=0
+   ÀÄi2c_interupt  0/90  Ram=0
+      ÃÄget_led_status  0/78  Ram=6
+      ÀÄ@I2C_WRITE_1  0/24  Ram=1

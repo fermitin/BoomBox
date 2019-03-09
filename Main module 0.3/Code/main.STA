@@ -1,0 +1,68 @@
+
+ROM used:   2204/16384 (13%)
+            2204/16384 (13%) including unused fragments
+
+            0.7 Average locations per line
+            3.2 Average locations per statement
+
+RAM used:   103/768 (13%) at main() level
+            121/768 (16%) worst case
+
+Stack used: 0 worst case (0 in main + 0 for interrupts)
+Stack size: 31
+
+Lines Stmts  %   Files
+----- ----- ---  -----
+  318   199  29  main.c
+   72     0   0  main.h
+  996     0   0  D:\Program Files\PICC\Devices\18F24K22.h
+ 1352   359  52  D:\Program Files\PICC\Drivers\STDLIB.H
+   32     0   0  D:\Program Files\PICC\Drivers\stddef.h
+  435   129  19  D:\Program Files\PICC\Drivers\string.h
+   28     0   0  D:\Program Files\PICC\Drivers\ctype.h
+----- -----
+ 3233   687 Total
+
+Page ROM  %  RAM    Vol Diff  Functions:
+---- --- --- ---    --- ----  ----------
+0     24   1    1             @delay_ms1
+0     28   1    1             @I2C_WRITEU_1
+0     30   1    1    357  3.3  @I2C_READU_1
+0     86   2   14             @MUL3232
+0    106   2    4    101  3.8  rand
+0     68   2    5             @DIV1616
+0     20   0    4     39  2.1  srand
+0    588  13   13    607  5.7  MAIN
+ Inline         3    255  5.0  recieve_hp_data
+0    114   3    7    583  5.9  send_gen_values
+0    182   4    7    587  5.4  led_series_set
+0     32   1    0    143  1.3  init
+0    232   5    2    197  3.2  seed_generation
+0    262   6    3    987  5.9  beep_sound
+ Inline         3    284  6.5  check_fail_state
+0    336   8    4   1442  5.1  display
+ Inline         6    228  4.6  seperateNumbers
+0     40   1    3             @DIV88
+ Inline         8    848  4.9  display_loop
+0     52   1    1    262  3.2  reset
+ Inline         0             @cinit1
+
+Program metrics:
+    Functions               15
+    Statements              687
+    Comments                1032
+    Volume (V)              11251
+    Difficulty (D)          65.9
+    Effort to implement (E) 741346
+    Time to implement (T)   11 hours, 26 minutes
+    Est Delivered Bugs (B)  3
+    Cyclomatic Complexity   40
+    Maintainability (MI)    88
+
+ Segment     Used  Free
+-----------  ----  ----
+00000-00002     4  0  
+00004-03FFE  2200  14180  
+
+
+
